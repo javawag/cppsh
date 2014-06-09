@@ -1,0 +1,11 @@
+#!/usr/bin/env cppsh
+/**CMake
+	#boost program_options
+	find_package(Boost COMPONENTS program_options filesystem system REQUIRED)
+	include_directories(${Boost_INCLUDE_DIRS})
+	target_link_libraries(${SCRIPT} ${Boost_LIBRARIES})	
+*/
+
+cout << "yay!" << endl;
+
+return 1;
