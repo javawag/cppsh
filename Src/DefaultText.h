@@ -55,6 +55,7 @@ namespace joe {
 }
 
 using namespace joe;
+using namespace std;
 
 )";
 

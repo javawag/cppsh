@@ -6,8 +6,6 @@
 	target_link_libraries(${SCRIPT} ${Boost_LIBRARIES})	
 */
 
-using namespace std;
-
 cout << "yay!" << endl;
 
 FileOut f("/Users/joe/Desktop/goose.txt");
