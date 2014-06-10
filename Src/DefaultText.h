@@ -61,10 +61,12 @@ using namespace std;
 
 
 // Bash build script:
-static String BASH_SCRIPT = R"(
-#!/bin/bash
+static String BASH_SCRIPT = R"(#!/bin/bash
+OLD_DIR=$PWD
+BUILD_DIR=`dirname $0`
+
 # Get into right folder
-cd `dirname $0`
+cd $BUILD_DIR
 
 # Build it...
 cmake .. -Wno-dev > /dev/null && make > /dev/null
@@ -76,7 +78,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # Run it!
-./${script_name} ${args}
+cd $OLD_DIR
+$BUILD_DIR/${script_name} ${args}
 
 exit $?
+
 )";
