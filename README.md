@@ -10,7 +10,7 @@ Currently VERY, VERY alpha!
 * May eat children and/or destroy rainforest if run without seatbelts on
 
 While C++ code is accepted as-is, I've added some nice defines and using statements to make it feel...
-*scriptier*. You can use these extensions if you wish, or if not you can just use plain C++11.
+*scriptier*. You can use these extensions if you wish, or if not you can just use plain C++11. Semicolons are optional, unless you use `//` comments at the end of the line (this be a bug!).
 
 Sample Script
 =============
