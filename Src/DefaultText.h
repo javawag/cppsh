@@ -1,4 +1,4 @@
-//CMake Defaults:
+// CMake Defaults:
 static String CMAKE_DEFAULTS = R"(
     project(${script_name})
     cmake_minimum_required(VERSION 2.8)
@@ -9,7 +9,7 @@ static String CMAKE_DEFAULTS = R"(
     add_executable(${PROJECT_NAME} Script.cpp)
 )";
 
-//C++ Defaults:
+// C++ Defaults:
 static String CPP_DEFAULTS = R"(
 #include <string>
 #include <sstream>
@@ -28,9 +28,9 @@ static String CPP_DEFAULTS = R"(
 #include <future>
 
 namespace joe {
-    using FileInputStream = std::ifstream;
-    using FileOutputStream = std::ofstream;
-    using FileStream = std::fstream;
+    using FileIn = std::ifstream;
+    using FileOut = std::ofstream;
+    using File = std::fstream;
     using String = std::string;
     using OutputStringStream = std::ostringstream;
     using InputStringStream = std::istringstream;
@@ -56,4 +56,30 @@ namespace joe {
 
 using namespace joe;
 using namespace std;
+
+)";
+
+
+// Bash build script:
+static String BASH_SCRIPT = R"(
+#!/bin/bash
+
+echo goose > ~/Desktop/out.txt
+
+# Get into right folder
+cd `dirname $0`
+
+# Build it...
+cmake .. -Wno-dev > /dev/null && make > /dev/null
+
+# Check it...
+if [ $? -ne 0 ]; then
+    echo Compilation failed!
+    exit 1
+fi
+
+# Run it!
+./${script_name} ${args}
+
+exit $?
 )";

@@ -1,5 +1,6 @@
 project(cppsh)
 cmake_minimum_required(VERSION 2.8)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ~/Documents/Scripts) #not for github!
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} --std=c++11)
 set(EXE_NAME ${PROJECT_NAME})
 

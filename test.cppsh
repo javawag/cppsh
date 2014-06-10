@@ -8,4 +8,7 @@
 
 cout << "yay!" << endl;
 
+FileOut f("/Users/joe/Desktop/goose.txt");
+f << "Magic!" << endl;
+
 return 1;

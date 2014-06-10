@@ -22,9 +22,9 @@ using std::cerr;
 using std::endl;
 
 namespace joe {
-    using FileInputStream = std::ifstream;
-    using FileOutputStream = std::ofstream;
-    using FileStream = std::fstream;
+    using FileIn = std::ifstream;
+    using FileOut = std::ofstream;
+    using File = std::fstream;
     using String = std::string;
     using OutputStringStream = std::ostringstream;
     using InputStringStream = std::istringstream;

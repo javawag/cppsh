@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
         return 1;
 	}
 
-    FileInputStream script(argv[1]);
+    FileIn script(argv[1]);
 
     if (!script.good()) {
         cerr << "Error reading script " << argv[1] << "! Bailing..." << endl;
@@ -49,33 +49,36 @@ int main(int argc, char **argv) {
 
     String scriptName = fs::path(argv[1]).filename().string();
 
-    UnorderedMap<String, String> cmakePlaceholders = {
-            { "script_name", scriptName },
-            { "build_dir", buildDir.string() }
+    UnorderedMap<String, String> placeholders = {
+        { "script_name",    scriptName },
+        { "build_dir",      buildDir.string() },
+        { "args",           ConcatenateArgs(argv+2, argv+argc) }
     };
 
-    FileOutputStream outCode((workingDir / "Script.cpp").string());
-    FileOutputStream outCMake((workingDir / "CMakeLists.txt").string());
+    FileOut outCode((workingDir / "Script.cpp").string());
+    FileOut outCMake((workingDir / "CMakeLists.txt").string());
+    FileOut outBash((buildDir / "run.sh").string());
 
-    outCode << CPP_DEFAULTS << "\n\n"
-            << preprocessor.str() << "\n\n"
-            << "int main(int argc, char **argv) {" << "\n"
-            << code.str() << "\n\n"
-            << "}";
+    outCode     << CPP_DEFAULTS << "\n\n"
+                << preprocessor.str() << "\n\n"
+                << "int main(int argc, char **argv) {" << "\n"
+                << code.str() << "\n\n"
+                << "}";
 
 
-    outCMake    << StringReplacePlaceholders(CMAKE_DEFAULTS, cmakePlaceholders) << "\n\n"
+    outCMake    << StringReplacePlaceholders(CMAKE_DEFAULTS, placeholders) << "\n\n"
                 << cmake.str();
 
+    outBash     << StringReplacePlaceholders(BASH_SCRIPT, placeholders);
+
     // Call CMake!
+    fs::path bashFile = (buildDir / "run.sh");
+    fs::permissions(bashFile, fs::add_perms | fs::others_exe);
+
     OutputStringStream command;
-    command << "cd \"" << buildDir.string() << "\""
-            << "&& cmake .. "
-            << "&& make"
-            << "&& ./" << scriptName << " " << ConcatenateArgs(argv+1, argv+argc);
+    command << "\"" << bashFile.string() << "\"";
 
     system(command.str().c_str());
-
     return 0;
 }
 
@@ -100,10 +103,10 @@ String StringReplacePlaceholders(const String &string, const UnorderedMap<String
     return sCopy;
 }
 
-
 fs::path GetFullPathForSubfolder(const String &folderName) {
     return fs::path(getenv("HOME")) / ".cppsh" / folderName;
 }
+
 void CreateSubfolderIfNotExist(const String &folderName) {
     fs::path sub = GetFullPathForSubfolder(folderName) / "Build";
 
