@@ -26,8 +26,9 @@ static String CPP_DEFAULTS = R"(
 #include <functional>
 #include <tuple>
 #include <future>
+#include <thread>
 
-namespace joe {
+namespace cppsh {
     using FileIn = std::ifstream;
     using FileOut = std::ofstream;
     using File = std::fstream;
@@ -35,6 +36,15 @@ namespace joe {
     using OutputStringStream = std::ostringstream;
     using InputStringStream = std::istringstream;
     using StringStream = std::stringstream;
+    using Thread = std::thread;
+
+    using Int = int;
+    using Float = float;
+    using SizeType = size_t;
+    using Double = double;
+    using Bool = bool;
+    using Char = char;
+    using Void = void;
 
     template <typename _T1, typename _T2>               using Pair = std::pair<_T1, _T2>;
     template <typename ..._Tp>                          using Tuple = std::tuple<_Tp...>;
@@ -54,8 +64,15 @@ namespace joe {
     template <typename _ElementType>                    using Future = std::future<_ElementType>;
 }
 
-using namespace joe;
-using namespace std;
+#define Output std::cout
+#define Input std::cin
+#define Error std::cerr
+#define Newl std::endl
+
+#define var auto
+#define func []
+
+using namespace cppsh;
 
 )";
 

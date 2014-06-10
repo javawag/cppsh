@@ -73,6 +73,7 @@ String ConcatenateArgs(_Iter begin, _Iter end) {
 
 // FUNCTIONS
 bool StringBeginsWith(const String &string, const String &pattern);
+bool StringEndsWith(const String &string, const String &pattern);
 String StringReplacePlaceholders(const String &string, const UnorderedMap<String, String> &placeholderValues);
 
 fs::path GetFullPathForSubfolder(const String &folderName);

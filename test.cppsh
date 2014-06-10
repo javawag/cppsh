@@ -1,4 +1,8 @@
 #!/usr/bin/env cppsh
+
+// Below lines within CMake tags are passed to the CMakeLists.txt file.
+// Use ${SCRIPT} to refer to the script executable.
+
 /**CMake
 	#boost program_options
 	find_package(Boost COMPONENTS program_options filesystem system REQUIRED)
@@ -6,9 +10,15 @@
 	target_link_libraries(${SCRIPT} ${Boost_LIBRARIES})	
 */
 
-cout << "yay!" << endl;
+// Boost should be available:
+namespace po = boost::program_options
+po::options_description desc /* Not using this, but to show it's available! */
 
-FileOut f("/Users/joe/Desktop/goose.txt");
-f << "Magic!" << endl;
+// Output to screen
+Output << "Hello, world!" << Newl
+// Standard C++ reads:
+// std::cout << "Hello, world!" << std::endl;
 
-return 1;
+// Output to file
+FileOut f("test_output.txt")
+f << "It's a kind of Magic!" << Newl /* Standard C++ uses std::endl */

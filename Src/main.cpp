@@ -39,7 +39,13 @@ int main(int argc, char **argv) {
             if (insideCmakePart) {
                 cmake << line << endl;
             } else {
-                code << line << endl;
+                code << line;
+
+                if (!StringEndsWith(line, ";") && !StringEndsWith(line, "{")) {
+                    code << ";";
+                }
+
+                code << endl;
             }
         }
     }
@@ -86,7 +92,16 @@ int main(int argc, char **argv) {
 }
 
 bool StringBeginsWith(const String &string, const String &pattern) {
-    return string.find(pattern) == 0;
+    return std::equal(  string.begin(),
+                        string.begin() + pattern.length(),
+                        pattern.begin()
+    );
+}
+bool StringEndsWith(const String &string, const String &pattern) {
+    return std::equal(  string.begin() + string.length() - pattern.length(),
+                        string.end(),
+                        pattern.begin()
+    );
 }
 
 String StringReplacePlaceholders(const String &string, const UnorderedMap<String, String> &placeholderValues) {

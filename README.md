@@ -1,22 +1,26 @@
 cppsh
 =====
 
-C++11 as a scripting language, using CMake as a build system
+cppsh (pronounced "capiche", ka-PEESH) is C++11 as a scripting language, using CMake as a build system.
 
 Currently VERY, VERY alpha!
-
-* Only tested on Mac OS X, but should work on Linux too (Windows support won't work without Cygwin!)
+* Only tested on Mac OS X, but should work on Linux too (Windows support won't work without Cygwin, or possibly at all!)
 * Prerequisites to build: CMake, Boost, C++11 compiler
 * Prerequisites to run scripts: CMake, C++11 compiler
 * May eat children and/or destroy rainforest if run without seatbelts on
 
-Apologies for my absurd coding style, I've come from a mixed background and I like what I like :)
+While C++ code is accepted as-is, I've added some nice defines and using statements to make it feel...
+*scriptier*. You can use these extensions if you wish, or if not you can just use plain C++11.
 
 Sample Script
 =============
 
 ```
 #!/usr/bin/env cppsh
+
+// Below lines within CMake tags are passed to the CMakeLists.txt file.
+// Use ${SCRIPT} to refer to the script executable.
+
 /**CMake
 	#boost program_options
 	find_package(Boost COMPONENTS program_options filesystem system REQUIRED)
@@ -24,16 +28,63 @@ Sample Script
 	target_link_libraries(${SCRIPT} ${Boost_LIBRARIES})	
 */
 
-cout << "Wahoo!" << endl;
+// Boost should be available:
+namespace po = boost::program_options
+po::options_description desc /* Not using this, but to show it's available! */
 
-FileOut f("/Users/joe/Desktop/goose.txt");
-f << "Magic!" << endl;
+// Output to screen
+Output << "Hello, world!" << Newl
+// Standard C++ reads:
+// std::cout << "Hello, world!" << std::endl;
 
-return 0;
+// Output to file
+FileOut f("test_output.txt") 		/* Standard C++ uses std::ofstream 	*/
+f << "It's a kind of Magic!" << Newl 	/* Standard C++ uses std::endl 		*/
 ```
 
 The `/**CMake` section is *optional*, but it injects arbitrary CMake script into the CMakeLists.txt file so that you can link in external libraries. Here, I include Boost's program_options and filesystem libraries, and then proceed to not use them.
 
 `FileOut` is simply an alias to `std::ofstream`. In `DefaultText.h` you can see all the aliases I create - I prefer working with these class names instead of the standard ones, but the standard ones are still available. 
 
-You'll also see in `DefaultText.h` that I controversially do a `using namespace std;` - this is horrible in real code, but for scripts it saves time. But feel free to tweak away at that file if you need to ;)
+Another quick example: functions
+================================
+
+Because these scripts are compiled into a single function, calling other functions is a bit tricky. You can't simply write a function in a function! However, as this is C++11, you can use lambdas like this:
+
+```
+auto isEven = [](int a) {
+	return a % 2 == 0;
+};
+```
+
+Or, using the optional cppsh syntax:
+
+```
+var isEven = func (Int a) -> Bool {
+	return a % 2 == 0
+}
+```
+
+How does this work internally?!
+===============================
+
+Magic. And dragons. But seriously, it creates a hidden folder inside your home directory, called .cppsh. In here you'll find MD5 hashes of the full paths of cppsh scripts you've run.
+
+Directory configuration:
+```
+~/.cppsh
+  |_ 615b3257271b98f658a5ec33cc5f20b0   <-- hashed script path
+         |_ Build/                      <-- build folder
+         |    |_ run.sh                 <-- script which bootstraps and runs the compiled code
+         |    |_ (cmake generated files)<-- compiled code from cmake
+         |_ CMakeLists.txt              <-- generated cmake build script
+         |_ Script.cpp                  <-- generated full C++ source
+```
+
+The CMakeLists.txt and Script.cpp files are generated from the script, and the run.sh is generated from a template. Then, cppsh runs run.sh which calls CMake to build your script in the parent directory. It then runs the resultant executable with any parameters you passed.
+
+Each time you run the script, if a cached version of the binary is available, it should be used rather than compiling from scratch to save time.
+
+
+
+Enjoy! And feel free to submit any bugs/issues here. Or fork it for your own purposes.
