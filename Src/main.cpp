@@ -1,5 +1,6 @@
 #include "main.h"
 #include "MD5.h"
+#include <unistd.h>
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -55,30 +56,32 @@ int main(int argc, char **argv) {
         { "args",           ConcatenateArgs(argv+2, argv+argc) }
     };
 
-    FileOut outCode((workingDir / "Script.cpp").string());
-    FileOut outCMake((workingDir / "CMakeLists.txt").string());
-    FileOut outBash((buildDir / "run.sh").string());
+    {
+        FileOut outCode((workingDir / "Script.cpp").string());
+        FileOut outCMake((workingDir / "CMakeLists.txt").string());
+        FileOut outBash((buildDir / "run.sh").string());
 
-    outCode     << CPP_DEFAULTS << "\n\n"
+        outCode << CPP_DEFAULTS << "\n\n"
                 << preprocessor.str() << "\n\n"
                 << "int main(int argc, char **argv) {" << "\n"
-                << code.str() << "\n\n"
+                    << code.str() << "\n\n"
                 << "}";
 
 
-    outCMake    << StringReplacePlaceholders(CMAKE_DEFAULTS, placeholders) << "\n\n"
+        outCMake << StringReplacePlaceholders(CMAKE_DEFAULTS, placeholders) << "\n\n"
                 << cmake.str();
 
-    outBash     << StringReplacePlaceholders(BASH_SCRIPT, placeholders);
+        outBash << StringReplacePlaceholders(BASH_SCRIPT, placeholders);
+    }
 
     // Call CMake!
     fs::path bashFile = (buildDir / "run.sh");
     fs::permissions(bashFile, fs::add_perms | fs::others_exe);
 
     OutputStringStream command;
-    command << "\"" << bashFile.string() << "\"";
-
+    command << "/usr/bin/env bash \"" << bashFile.string() << "\"";
     system(command.str().c_str());
+
     return 0;
 }
 

@@ -63,9 +63,6 @@ using namespace std;
 // Bash build script:
 static String BASH_SCRIPT = R"(
 #!/bin/bash
-
-echo goose > ~/Desktop/out.txt
-
 # Get into right folder
 cd `dirname $0`
 
