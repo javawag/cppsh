@@ -17,34 +17,33 @@ Sample Script
 
 ```
 #!/usr/bin/env cppsh
-
-// Below lines within CMake tags are passed to the CMakeLists.txt file.
-// Use ${SCRIPT} to refer to the script executable.
-
 /**CMake
-	#boost program_options
-	find_package(Boost COMPONENTS program_options filesystem system REQUIRED)
-	include_directories(${Boost_INCLUDE_DIRS})
-	target_link_libraries(${SCRIPT} ${Boost_LIBRARIES})	
+    find_package(Boost COMPONENTS filesystem system REQUIRED)
+    include_directories(${Boost_INCLUDE_DIRS})
+    target_link_libraries(${SCRIPT} ${Boost_LIBRARIES}) 
 */
 
-// Boost should be available:
-namespace po = boost::program_options
-po::options_description desc /* Not using this, but to show it's available! */
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem
 
-// Output to screen
-Output << "Hello, world!" << Newl
-// Standard C++ reads:
-// std::cout << "Hello, world!" << std::endl;
+fs::path testDir = "Goose"
+fs::path testFile = testDir / "test.txt"
 
-// Output to file
-FileOut f("test_output.txt") 		/* Standard C++ uses std::ofstream 	*/
-f << "It's a kind of Magic!" << Newl 	/* Standard C++ uses std::endl 		*/
+fs::create_directory(testDir)
+
+FileOut out(testFile.string();
+out << "Hello, scripty world!"
+
+Output << "Made a goosey file!" << Newl
 ```
 
-The `/**CMake` section is *optional*, but it injects arbitrary CMake script into the CMakeLists.txt file so that you can link in external libraries. Here, I include Boost's program_options and filesystem libraries, and then proceed to not use them.
+The `/**CMake` section is *optional*, but it injects arbitrary CMake script into the CMakeLists.txt file so that you can link in external libraries. Here, I include Boost's filesystem library.
+
+The `#include` directive, while specified inside the script itself, is *hoisted* to the top of the file, where the includes should go. In this way, you are actually able to `#include` files from anywhere within the script.
 
 `FileOut` is simply an alias to `std::ofstream`. In `DefaultText.h` you can see all the aliases I create - I prefer working with these class names instead of the standard ones, but the standard ones are still available. 
+
+This script, when run, will create a directory called `Goose` and then inside it place a file named `test.txt`, containing the text `"Hello, scripty world!"`.
 
 Another quick example: functions
 ================================
