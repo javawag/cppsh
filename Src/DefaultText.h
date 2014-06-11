@@ -99,5 +99,4 @@ cd $OLD_DIR
 $BUILD_DIR/${script_name} ${args}
 
 exit $?
-
 )";
