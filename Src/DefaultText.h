@@ -18,6 +18,13 @@ static std::string CMAKE_DEFAULTS = R"(
     include_directories(${CPPSH_HEADER})
 )";
 
+// CMake auto package thingy
+static std::string AUTO_PACKAGE_TEMPLATE = R"(
+find_package(${pkg_name} ${args})
+include_directories(${${pkg_name}_INCLUDE_DIR})
+target_link_libraries(${SCRIPT} ${${pkg_name}_LIBRARIES})
+)";
+
 // Bash build script:
 static std::string BASH_SCRIPT = R"(#!/bin/bash
 OLD_DIR=$PWD

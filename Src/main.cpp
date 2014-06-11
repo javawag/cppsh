@@ -54,10 +54,28 @@ int main(int argc, char **argv) {
         } else if (StringBeginsWith(line, "#")) {
             preprocessor << line << endl;
         } else {
-            if (insideCmakePart) {
+            if (StringBeginsWith(line, "@package")) {
+                size_t firstSpace = line.find_first_of(" ");
+                String packageNameAndArgs = line.substr(firstSpace + 1);
+
+                size_t secondSpace = packageNameAndArgs.find_first_of(" ");
+
+                String packageName, args;
+                if (firstSpace != String::npos) {
+                    packageName = packageNameAndArgs.substr(0, secondSpace);
+                    args = packageNameAndArgs.substr(secondSpace+1);
+                } else {
+                    packageName = packageNameAndArgs;
+                }
+
+                String autoCmake = StringReplacePlaceholders(AUTO_PACKAGE_TEMPLATE, {
+                        { "pkg_name", packageName },
+                        { "args", args}
+                });
+                cmake << autoCmake << endl;
+            } else if (insideCmakePart) {
                 cmake << line << endl;
             } else {
-
                 if (!StringEndsWith(line, ";") && !StringEndsWith(line, "{")) {
 
                     size_t commentSlashSlash = line.rfind("//");
@@ -117,14 +135,26 @@ int main(int argc, char **argv) {
 }
 
 bool StringBeginsWith(const String &string, const String &pattern) {
-    return std::equal(  string.begin(),
-                        string.begin() + pattern.length(),
+    size_t startPos = string.find_first_not_of("\t ");
+
+    if (string.length() - startPos < pattern.length()) {
+        return false;
+    }
+
+    return std::equal(  string.begin() + startPos,
+                        string.begin() + startPos + pattern.length(),
                         pattern.begin()
     );
 }
 bool StringEndsWith(const String &string, const String &pattern) {
-    return std::equal(  string.begin() + string.length() - pattern.length(),
-                        string.end(),
+    size_t endPos = string.find_last_not_of("\t ") + 1;
+
+    if (endPos < pattern.length()) {
+        return false;
+    }
+
+    return std::equal(  string.begin() + endPos - pattern.length(),
+                        string.end() - endPos,
                         pattern.begin()
     );
 }
