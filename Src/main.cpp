@@ -6,8 +6,22 @@ int main(int argc, char **argv) {
 	if (argc < 2) {
 		cerr << "No script defined." << endl;
 		cerr << "Usage: " << argv[0] << " <script-name>" << endl;
+        cerr << "   or: " << argv[0] << " --clear-cache # to remove cached executables" << endl;
+
         return 1;
 	}
+
+    // First check the user doesn't mean to clear their cache!
+    if (String(argv[1]) == "--clear-cache") {
+        uintmax_t deleted = fs::remove_all(GetCppshFolder());
+
+        if (deleted) {
+            cout << "Cached cleared. Removed " << deleted << " item" << (deleted == 1 ? "" : "s") << "." << endl;
+        } else {
+            cerr << "Nothing to clear." << endl;
+        }
+        return 0;
+    }
 
     FileIn script(argv[1]);
 
@@ -121,8 +135,13 @@ String StringReplacePlaceholders(const String &string, const UnorderedMap<String
     return sCopy;
 }
 
+fs::path GetCppshFolder() {
+    return fs::path(getenv("HOME")) / ".cppsh";
+}
+
+
 fs::path GetFullPathForSubfolder(const String &folderName) {
-    return fs::path(getenv("HOME")) / ".cppsh" / folderName;
+    return GetCppshFolder() / folderName;
 }
 
 void CreateSubfolderIfNotExist(const String &folderName) {
