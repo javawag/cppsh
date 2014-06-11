@@ -55,6 +55,10 @@ Because these scripts are compiled into a single function, calling other functio
 auto isEven = [](int a) {
 	return a % 2 == 0;
 };
+
+for (int i = 0; i < 10; ++i) {
+	std::cout << std::boolalpha << i << " is even? " << isEven(i) << std::endl;
+}
 ```
 
 Or, using the optional cppsh syntax:
@@ -62,6 +66,10 @@ Or, using the optional cppsh syntax:
 ```
 var isEven = func (Int a) -> Bool {
 	return a % 2 == 0
+}
+
+for (Int i = 0; i < 10; ++i) {
+	Output << std::boolalpha << i << " is even? " << isEven(i) << Newl
 }
 ```
 
