@@ -10,41 +10,40 @@ Currently VERY, VERY alpha!
 * May eat children and/or destroy rainforest if run without seatbelts on
 
 While C++ code is accepted as-is, I've added some nice defines and using statements to make it feel...
-*scriptier*. You can use these extensions if you wish, or if not you can just use plain C++11.
+*scriptier*. You can use these extensions if you wish, or if not you can just use plain C++11. Semicolons are optional, unless you use `//` comments at the end of the line (this be a bug!).
 
 Sample Script
 =============
 
 ```
 #!/usr/bin/env cppsh
-
-// Below lines within CMake tags are passed to the CMakeLists.txt file.
-// Use ${SCRIPT} to refer to the script executable.
-
 /**CMake
-	#boost program_options
-	find_package(Boost COMPONENTS program_options filesystem system REQUIRED)
-	include_directories(${Boost_INCLUDE_DIRS})
-	target_link_libraries(${SCRIPT} ${Boost_LIBRARIES})	
+    find_package(Boost COMPONENTS filesystem system REQUIRED)
+    include_directories(${Boost_INCLUDE_DIRS})
+    target_link_libraries(${SCRIPT} ${Boost_LIBRARIES}) 
 */
 
-// Boost should be available:
-namespace po = boost::program_options
-po::options_description desc /* Not using this, but to show it's available! */
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem
 
-// Output to screen
-Output << "Hello, world!" << Newl
-// Standard C++ reads:
-// std::cout << "Hello, world!" << std::endl;
+fs::path testDir = "Goose"
+fs::path testFile = testDir / "test.txt"
 
-// Output to file
-FileOut f("test_output.txt") 		/* Standard C++ uses std::ofstream 	*/
-f << "It's a kind of Magic!" << Newl 	/* Standard C++ uses std::endl 		*/
+fs::create_directory(testDir)
+
+FileOut out(testFile.string();
+out << "Hello, scripty world!"
+
+Output << "Made a goosey file!" << Newl
 ```
 
-The `/**CMake` section is *optional*, but it injects arbitrary CMake script into the CMakeLists.txt file so that you can link in external libraries. Here, I include Boost's program_options and filesystem libraries, and then proceed to not use them.
+The `/**CMake` section is *optional*, but it injects arbitrary CMake script into the CMakeLists.txt file so that you can link in external libraries. Here, I include Boost's filesystem library.
+
+The `#include` directive, while specified inside the script itself, is *hoisted* to the top of the file, where the includes should go. In this way, you are actually able to `#include` files from anywhere within the script.
 
 `FileOut` is simply an alias to `std::ofstream`. In `DefaultText.h` you can see all the aliases I create - I prefer working with these class names instead of the standard ones, but the standard ones are still available. 
+
+This script, when run, will create a directory called `Goose` and then inside it place a file named `test.txt`, containing the text `"Hello, scripty world!"`.
 
 Another quick example: functions
 ================================
@@ -55,6 +54,10 @@ Because these scripts are compiled into a single function, calling other functio
 auto isEven = [](int a) {
 	return a % 2 == 0;
 };
+
+for (int i = 0; i < 10; ++i) {
+	std::cout << std::boolalpha << i << " is even? " << isEven(i) << std::endl;
+}
 ```
 
 Or, using the optional cppsh syntax:
@@ -62,6 +65,10 @@ Or, using the optional cppsh syntax:
 ```
 var isEven = func (Int a) -> Bool {
 	return a % 2 == 0
+}
+
+for (Int i = 0; i < 10; ++i) {
+	Output << std::boolalpha << i << " is even? " << isEven(i) << Newl
 }
 ```
 
