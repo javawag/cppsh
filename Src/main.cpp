@@ -1,6 +1,10 @@
 #include "main.h"
 #include "MD5.h"
-#include <unistd.h>
+
+using std::cerr;
+using std::cin;
+using std::cout;
+using std::endl;
 
 int main(int argc, char **argv) {
 	if (argc < 2) {
@@ -53,10 +57,17 @@ int main(int argc, char **argv) {
             if (insideCmakePart) {
                 cmake << line << endl;
             } else {
-                code << line;
 
                 if (!StringEndsWith(line, ";") && !StringEndsWith(line, "{")) {
-                    code << ";";
+
+                    size_t commentSlashSlash = line.rfind("//");
+                    size_t commentSlashStar = line.rfind("/*");
+
+                    size_t endOfLine = std::min(commentSlashSlash, std::min(commentSlashStar, line.length()));
+
+                    code << line.substr(0, endOfLine) << ";" << line.substr(endOfLine);
+                } else {
+                    code << line;
                 }
 
                 code << endl;

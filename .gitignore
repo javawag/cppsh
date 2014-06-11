@@ -22,3 +22,6 @@
 
 # CppIDE Project Files
 .idea/
+
+# Possible build folder
+build/
