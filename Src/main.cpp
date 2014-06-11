@@ -125,13 +125,11 @@ int main(int argc, char **argv) {
 
     // Call CMake!
     fs::path bashFile = (buildDir / "run.sh");
-    fs::permissions(bashFile, fs::add_perms | fs::others_exe);
+    fs::permissions(bashFile, fs::add_perms | fs::others_exe | fs::group_exe | fs::owner_exe);
 
-    OutputStringStream command;
-    command << "/usr/bin/env bash \"" << bashFile.string() << "\"";
-    system(command.str().c_str());
+    int exitCode = system(bashFile.string().c_str());
 
-    return 0;
+    return WEXITSTATUS(exitCode);
 }
 
 bool StringBeginsWith(const String &string, const String &pattern) {

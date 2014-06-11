@@ -9,12 +9,8 @@ file(GLOB_RECURSE SOURCES Src/*.cpp)
 
 add_executable(${EXE_NAME} ${SOURCES} ${HEADERS})
 
-# cppsh header
-find_path(CPPSH_HEADER
-            NAMES           cppsh/cppsh.h
-            HINTS           /usr/local/include
-                            /opt/local/include)
-include_directories(${CPPSH_HEADER})
+#header hackery
+include_directories(${CMAKE_SOURCE_DIR})
 
 #boost filesystem
 find_package(Boost COMPONENTS filesystem system REQUIRED)
