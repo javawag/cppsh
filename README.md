@@ -39,6 +39,24 @@ Output << "Made a goosey file!" << Newl
 
 The `/**CMake` section is *optional*, but it injects arbitrary CMake script into the CMakeLists.txt file so that you can link in external libraries. Here, I include Boost's filesystem library.
 
+As an aside, there is an alternative syntax for CMake too - `@package`. For very simple CMake includes you can use this instead, for example, our Boost example above goes from
+
+```
+/**CMake
+    find_package(Boost COMPONENTS filesystem system REQUIRED)
+    include_directories(${Boost_INCLUDE_DIRS})
+    target_link_libraries(${SCRIPT} ${Boost_LIBRARIES}) 
+*/
+```
+
+to
+
+```
+@package Boost COMPONENTS filesystem system REQUIRED
+````
+
+As you can see, the line is passed into `find_package` as-is, and the first argument (i.e. `Boost`) is understood to be the library name, and is used for the 2nd two lines. Most packages can be used in this way, but some unfortunately cannot. This `@package` syntax can appear either *inside* the `/**CMake` section, or else anywhere in the script.
+
 The `#include` directive, while specified inside the script itself, is *hoisted* to the top of the file, where the includes should go. In this way, you are actually able to `#include` files from anywhere within the script.
 
 `FileOut` is simply an alias to `std::ofstream`. In `DefaultText.h` you can see all the aliases I create - I prefer working with these class names instead of the standard ones, but the standard ones are still available. 
