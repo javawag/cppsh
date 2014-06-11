@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
         FileOut outCMake((workingDir / "CMakeLists.txt").string());
         FileOut outBash((buildDir / "run.sh").string());
 
-        outCode << CPP_DEFAULTS << "\n\n"
+        outCode << "#include <cppsh/cppsh.h>" << "\n\n"
                 << preprocessor.str() << "\n\n"
                 << "int main(int argc, char **argv) {" << "\n"
                     << code.str() << "\n\n"

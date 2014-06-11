@@ -1,6 +1,5 @@
 project(cppsh)
 cmake_minimum_required(VERSION 2.8)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ~/Documents/Scripts) #not for github!
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} --std=c++11)
 set(EXE_NAME ${PROJECT_NAME})
 
@@ -13,3 +12,7 @@ add_executable(${EXE_NAME} ${SOURCES} ${HEADERS})
 find_package(Boost COMPONENTS filesystem system REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(${EXE_NAME} ${Boost_LIBRARIES})
+
+#install
+install(FILES Include/cppsh.h   DESTINATION include/cppsh)
+install(TARGETS ${EXE_NAME}     DESTINATION bin)
