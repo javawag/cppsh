@@ -26,8 +26,11 @@ bool StringBeginsWith(const String &string, const String &pattern);
 bool StringEndsWith(const String &string, const String &pattern);
 String StringReplacePlaceholders(const String &string, const UnorderedMap<String, String> &placeholderValues);
 
+int RunCommand(const String &command);
+
 fs::path GetCppshFolder();
 fs::path GetFullPathForSubfolder(const String &folderName);
 
 void CreateSubfolderIfNotExist(const String &folderName);
 String CalculateMD5Sum(const String &in);
+String CalculateMD5Sum(const fs::path &in);

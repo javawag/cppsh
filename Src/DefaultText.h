@@ -41,10 +41,4 @@ if [ $? -ne 0 ]; then
     echo Compilation failed!
     exit 1
 fi
-
-# Run it!
-cd $OLD_DIR
-$BUILD_DIR/${script_name} ${args}
-
-exit $?
 )";
