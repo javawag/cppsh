@@ -113,6 +113,8 @@ int main(int argc, char **argv) {
         outCode << "#include <cppsh/cppsh.h>" << "\n\n"
                 << preprocessor.str() << "\n\n"
                 << "int main(int argc, char **argv) {" << "\n"
+                    << "Vector<String> Args;" << "\n"
+                    << "if (argc > 1) Args = Vector<String>(argv + 1, argv + argc);" << "\n"
                     << code.str() << "\n\n"
                 << "}";
 
