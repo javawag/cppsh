@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
         uintmax_t deleted = fs::remove_all(GetCppshFolder());
 
         if (deleted) {
-            cout << "Cached cleared. Removed " << deleted << " item" << (deleted == 1 ? "" : "s") << "." << endl;
+            cout << "Cache cleared. Removed " << deleted << " item" << (deleted == 1 ? "" : "s") << "." << endl;
         } else {
             cerr << "Nothing to clear." << endl;
         }
@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
     // Set up environment
     String scriptName = fs::path(argv[1]).filename().string();
     String scriptHash = CalculateMD5Sum(fs::system_complete(argv[1]).string());
+    
     fs::path workingDir = GetFullPathForSubfolder(scriptHash);
     fs::path buildDir = workingDir / "Build";
 
@@ -113,8 +114,8 @@ int main(int argc, char **argv) {
 
         // Write build artifacts
         UnorderedMap<String, String> placeholders = {
-                {"script_name", scriptName},
-                {"build_dir", buildDir.string()}
+            {"script_name", scriptName},
+            {"build_dir", buildDir.string()}
         };
 
         // Write out artifacts
@@ -126,19 +127,17 @@ int main(int argc, char **argv) {
         outCode << "#include <cppsh/cppsh.h>" << "\n\n"
                 << preprocessor.str() << "\n\n"
                 << "int main(int argc, char **argv) {" << "\n"
-                << "Vector<String> Args;" << "\n"
-                << "if (argc > 1) Args = Vector<String>(argv + 1, argv + argc);" << "\n"
-                << code.str() << "\n\n"
+                    << "Vector<String> Args;" << "\n"
+                    << "if (argc > 1) Args = Vector<String>(argv + 1, argv + argc);" << "\n"
+                    << code.str() << "\n\n"
                 << "}" << std::flush;
 
-        outCMake << StringReplacePlaceholders(CMAKE_DEFAULTS, placeholders) << "\n\n"
-                << cmake.str()
-                << std::flush;
+        outCMake    << StringReplacePlaceholders(CMAKE_DEFAULTS, placeholders) << "\n\n"
+                    << cmake.str()
+                    << std::flush;
 
         outBash << StringReplacePlaceholders(BASH_SCRIPT, placeholders) << std::flush;
-
         outHash << CalculateMD5Sum(fs::path(argv[1])) << std::flush;
-
 
         // Call CMake!
         fs::path bashFile = (buildDir / "build.sh");
