@@ -58,7 +58,6 @@ namespace cppsh {
 #define Error std::cerr
 #define Newl std::endl
 
-#define Var auto
-#define Func []
+#define func []
 
 using namespace cppsh;
