@@ -57,7 +57,7 @@ Here is that same script, made *scriptier* using the cppsh syntax - capiche??
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem
 
-fs::path testDir = "Goose"
+fs::path testDir = Args.empty() ? "Goose" : Args[0] // Args is a Vector<String>
 fs::path testFile = testDir / "test.txt"
 
 fs::create_directory(testDir)
@@ -73,6 +73,8 @@ Here, we make a few changes. Firstly, semi-colons are out! We also swap out the 
 We're using the alternative syntax for CMake here - `@package`. For very simple CMake includes you can use this instead - for example, our `Boost` package is included in this way.
 
 As you can see, the `@package` line is passed into `find_package` as-is, and the first argument (i.e. `Boost`) is understood to be the library name, and is used for the 2nd two lines from the first example. Most packages can be used in this way (i.e. `Boost`, `CURL`, ...), but some unfortunately cannot (i.e. `wxWidgets`). This `@package` syntax can appear either *inside* the `/**CMake` section, or else anywhere in the script, by the way.
+
+I also sneaked in an optional argument which allows you to rename the folder it creates. `Args` is a `Vector<String>` of the arguments passed in, excluding the script name itself. You can, of course, use `argc` and `argv` instead if you prefer.
 
 `FileOut` is simply an alias to `std::ofstream`. In `DefaultText.h` you can see all the aliases I create - I prefer working with these class names instead of the standard ones, but the standard ones are still available. 
 
