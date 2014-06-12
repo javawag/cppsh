@@ -96,7 +96,7 @@ for (int i = 0; i < 10; ++i) {
 Or, using the optional cppsh syntax:
 
 ```
-Var isEven = func (Int a) -> Bool {
+Var isEven = Func (Int a) -> Bool {
 	return a % 2 == 0
 }
 
