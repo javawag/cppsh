@@ -107,6 +107,20 @@ for (Int i = 0; i < 10; ++i) {
 
 Then, you call it as if it were just another function, i.e. `isEven(5)`.
 
+Inline Bash
+===========
+
+You can also run bash commands directly from your C++ code (woah!). Using this you can get String output from Unix commands easily, and you are able to pass in actual C++ objects to scripts too!
+
+```
+String message = "hello"
+String banner = `banner ${{message}}` //C++ expressions can be passed in with ${{ }} syntax
+
+Output << banner
+```
+
+Noice!
+
 How does this work internally?!
 ===============================
 
