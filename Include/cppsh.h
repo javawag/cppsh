@@ -24,6 +24,8 @@ namespace cppsh {
     using String = std::string;
     using OutputStringStream = std::ostringstream;
     using InputStringStream = std::istringstream;
+    using OutputStream = std::ostream;
+    using InputStream = std::istream;
     using StringStream = std::stringstream;
     using Thread = std::thread;
 
@@ -51,6 +53,24 @@ namespace cppsh {
     template <typename _Fp>                             using Function = std::function<_Fp>;
     template <typename _ElementType>                    using Promise = std::promise<_ElementType>;
     template <typename _ElementType>                    using Future = std::future<_ElementType>;
+
+    inline String RunExternalCommand(const String &command) {
+        FILE *in = popen(command.c_str(), "r");
+        char buff[512];
+        OutputStringStream output;
+
+        if (!in) {
+            return "";
+        }
+
+        while(fgets(buff, sizeof(buff), in) != NULL){
+            output << buff;
+        }
+
+        pclose(in);
+
+        return output.str();
+    }
 }
 
 #define Output std::cout

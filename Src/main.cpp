@@ -6,6 +6,8 @@ using std::cin;
 using std::cout;
 using std::endl;
 
+static int nextCommand = 1;
+
 int main(int argc, char **argv) {
     // Check arguments
 	if (argc < 2) {
@@ -95,6 +97,8 @@ int main(int argc, char **argv) {
                 } else if (insideCmakePart) {
                     cmake << line << endl;
                 } else {
+                    StringReplaceInlineBash(line, code);
+
                     if (!StringEndsWith(line, ";") && !StringEndsWith(line, "{")) {
 
                         size_t commentSlashSlash = line.rfind("//");
@@ -196,6 +200,51 @@ String StringReplacePlaceholders(const String &string, const UnorderedMap<String
     }
 
     return sCopy;
+}
+
+void StringReplaceInlineBash(String &str, OutputStream &out) {
+    size_t position = 0;
+
+    // Find each `command`
+    while (position < str.length()) {
+        size_t beginBacktick = str.find("`", position);
+
+        if (beginBacktick == String::npos) {
+            break;
+        }
+
+        size_t endBacktick = str.find("`", beginBacktick + 1);
+
+        OutputStringStream command;
+        command << "RunExternalCommand(String(\"\") + \"";
+        String rawCommand = str.substr(beginBacktick + 1, endBacktick - beginBacktick - 1); //e.g. "ls -alh"
+
+        //Find each var in the command (if any!)
+        size_t commandPosition = 0;
+        while (commandPosition < rawCommand.length()) {
+            size_t beginVar = rawCommand.find("${{", commandPosition);
+
+            if (beginVar == String::npos) {
+                command << rawCommand.substr(commandPosition, rawCommand.length() - commandPosition);
+                break;
+            } else {
+                command << rawCommand.substr(commandPosition, beginVar - commandPosition);
+            }
+
+            size_t endVar = rawCommand.find("}}", beginVar + 1);
+
+            String outsideQuotes = rawCommand.substr(beginVar + 3, endVar - beginVar - 3);
+
+            command << "\" + " << outsideQuotes << " + \"";
+
+            commandPosition = endVar + 2;
+        }
+
+        command << "\")";
+        str.replace(beginBacktick, endBacktick + 1, command.str());
+
+        position = beginBacktick + command.str().length() + 1;
+    }
 }
 
 int RunCommand(const String &command) {
