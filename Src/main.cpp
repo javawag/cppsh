@@ -6,8 +6,6 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-static int nextCommand = 1;
-
 int main(int argc, char **argv) {
     // Check arguments
 	if (argc < 2) {
@@ -99,8 +97,7 @@ int main(int argc, char **argv) {
                 } else {
                     StringReplaceInlineBash(line, code);
 
-                    if (!StringEndsWith(line, ";") && !StringEndsWith(line, "{")) {
-
+                    if (!StringEndsWith(line, ";") && !StringEndsWith(line, "{") && !line.empty()) {
                         size_t commentSlashSlash = line.rfind("//");
                         size_t commentSlashStar = line.rfind("/*");
 
@@ -180,7 +177,7 @@ bool StringEndsWith(const String &string, const String &pattern) {
     }
 
     return std::equal(  string.begin() + endPos - pattern.length(),
-                        string.end() - endPos,
+                        string.begin() + endPos,
                         pattern.begin()
     );
 }

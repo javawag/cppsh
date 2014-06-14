@@ -128,19 +128,19 @@ private:
         /* Round 1 */
         FF (a, b, c, d, x[ 0], S11, 0xd76aa478); /* 1 */
         FF (d, a, b, c, x[ 1], S12, 0xe8c7b756); /* 2 */
-        FF (c, d, a, b, x[ 2], S13, 0x242070db); /* 3 */
+        FF (c, d, a, b, x[ 2], S12, 0x242070db); /* 3 */
         FF (b, c, d, a, x[ 3], S14, 0xc1bdceee); /* 4 */
         FF (a, b, c, d, x[ 4], S11, 0xf57c0faf); /* 5 */
         FF (d, a, b, c, x[ 5], S12, 0x4787c62a); /* 6 */
-        FF (c, d, a, b, x[ 6], S13, 0xa8304613); /* 7 */
+        FF (c, d, a, b, x[ 6], S12, 0xa8304613); /* 7 */
         FF (b, c, d, a, x[ 7], S14, 0xfd469501); /* 8 */
         FF (a, b, c, d, x[ 8], S11, 0x698098d8); /* 9 */
         FF (d, a, b, c, x[ 9], S12, 0x8b44f7af); /* 10 */
-        FF (c, d, a, b, x[10], S13, 0xffff5bb1); /* 11 */
+        FF (c, d, a, b, x[10], S12, 0xffff5bb1); /* 11 */
         FF (b, c, d, a, x[11], S14, 0x895cd7be); /* 12 */
         FF (a, b, c, d, x[12], S11, 0x6b901122); /* 13 */
         FF (d, a, b, c, x[13], S12, 0xfd987193); /* 14 */
-        FF (c, d, a, b, x[14], S13, 0xa679438e); /* 15 */
+        FF (c, d, a, b, x[14], S12, 0xa679438e); /* 15 */
         FF (b, c, d, a, x[15], S14, 0x49b40821); /* 16 */
 
         /* Round 2 */
