@@ -54,22 +54,44 @@ namespace cppsh {
     template <typename _ElementType>                    using Promise = std::promise<_ElementType>;
     template <typename _ElementType>                    using Future = std::future<_ElementType>;
 
-    inline String RunExternalCommand(const String &command) {
+    struct BashReturnValue {
+        Int ExitCode;
+        String Output;
+
+        operator Bool() const {
+            return ExitCode == 0;
+        }
+
+        operator Int() const {
+            return ExitCode;
+        }
+
+        operator String() const {
+            return Output;
+        }
+    };
+
+    inline BashReturnValue RunExternalCommand(const String &command) {
+        BashReturnValue returnValue;
+
         FILE *in = popen(command.c_str(), "r");
         char buff[512];
         OutputStringStream output;
 
         if (!in) {
-            return "";
+            returnValue.Output = "";
+            returnValue.ExitCode = 1;
+            return returnValue;
         }
 
         while(fgets(buff, sizeof(buff), in) != NULL){
             output << buff;
         }
 
-        pclose(in);
+        returnValue.ExitCode = pclose(in);
+        returnValue.Output = output.str();
 
-        return output.str();
+        return returnValue;
     }
 }
 
