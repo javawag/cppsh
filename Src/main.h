@@ -25,7 +25,7 @@ String ConcatenateArgs(_Iter begin, _Iter end) {
 bool StringBeginsWith(const String &string, const String &pattern);
 bool StringEndsWith(const String &string, const String &pattern);
 String StringReplacePlaceholders(const String &string, const UnorderedMap<String, String> &placeholderValues);
-void StringReplaceInlineBash(String &str, OutputStream &out);
+void StringReplaceInlineBash(String &str);
 
 int RunCommand(const String &command);
 

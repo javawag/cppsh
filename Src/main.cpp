@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
                 } else if (insideCmakePart) {
                     cmake << line << endl;
                 } else {
-                    StringReplaceInlineBash(line, code);
+                    StringReplaceInlineBash(line);
 
                     if (!StringEndsWith(line, ";") && !StringEndsWith(line, "{") && !line.empty()) {
                         size_t commentSlashSlash = line.rfind("//");
@@ -199,47 +199,85 @@ String StringReplacePlaceholders(const String &string, const UnorderedMap<String
     return sCopy;
 }
 
-void StringReplaceInlineBash(String &str, OutputStream &out) {
+void StringReplaceInlineBash(String &str) {
+    // This is a bit (/lot) of a mess, but it does a difficult job!
     size_t position = 0;
+
+    bool finished = false;
 
     // Find each `command`
     while (position < str.length()) {
         size_t beginBacktick = str.find("`", position);
 
+        // No commands!
         if (beginBacktick == String::npos) {
             break;
         }
 
+        // Find end of this command
         size_t endBacktick = str.find("`", beginBacktick + 1);
 
+        // Command not closed! Damnit!
+        if (endBacktick == String::npos) {
+            break;
+        }
+
+        // Write start of call
         OutputStringStream command;
-        command << "RunExternalCommand(String(\"\") + \"";
+        command << "RunExternalCommand(\"";
+
+        // Get the full command text, including ${{var}} placeholders
         String rawCommand = str.substr(beginBacktick + 1, endBacktick - beginBacktick - 1); //e.g. "ls -alh"
 
-        //Find each var in the command (if any!)
+        //Find each ${{var}} in the command (if any!)
         size_t commandPosition = 0;
         while (commandPosition < rawCommand.length()) {
             size_t beginVar = rawCommand.find("${{", commandPosition);
 
+            // No ${{vars}} at all!
             if (beginVar == String::npos) {
+                // Write command as-is, all done
                 command << rawCommand.substr(commandPosition, rawCommand.length() - commandPosition);
                 break;
             } else {
+                // Write up to the var
                 command << rawCommand.substr(commandPosition, beginVar - commandPosition);
             }
 
+            // Find end of var
             size_t endVar = rawCommand.find("}}", beginVar + 1);
 
+            // Let's hope we don't have unclosed vars, but just in case
+            if (endVar == String::npos) {
+                break;
+            }
+
+            // Get the text to appear outside quotes (i.e. the var)
             String outsideQuotes = rawCommand.substr(beginVar + 3, endVar - beginVar - 3);
 
-            command << "\" + " << outsideQuotes << " + \"";
-
+            // Insert it in
             commandPosition = endVar + 2;
+            command << "\" + " << outsideQuotes;
+
+            // If we're on a var and we've reached the end of the command, don't start a new string literal
+            if (commandPosition == rawCommand.length()) {
+                command << ")";
+                finished = true;
+            } else {
+                // Start a new string literal so we're back at initial state
+                command << " + \"";
+            }
         }
 
-        command << "\")";
+        // Unless we finished on a var just now, close out the string literal
+        if (!finished) {
+            command << "\")";
+        }
+
+        // Jam this finished command in :D
         str.replace(beginBacktick, endBacktick + 1, command.str());
 
+        // Move cursor!
         position = beginBacktick + command.str().length() + 1;
     }
 }
