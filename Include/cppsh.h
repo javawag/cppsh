@@ -96,8 +96,12 @@ namespace cppsh {
 }
 
 #define Output std::cout
-#define Input std::cin
-#define Error std::cerr
+#define Out     std::cout
+#define Input   std::cin
+#define In      std::cin
+#define Error   std::cerr
+#define Err     std::cerr
+
 #define Newl std::endl
 
 #define func []
