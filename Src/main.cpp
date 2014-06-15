@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
                 // Don't let this into the C++ code!!
             } else if (StringBeginsWith(line, "/**CMake")) {
                 insideCmakePart = true;
-            } else if (StringBeginsWith(line, "*/")) {
+            } else if (StringBeginsWith(line, "*/") && insideCmakePart) {
                 insideCmakePart = false;
             } else if (StringBeginsWith(line, "#")) {
                 preprocessor << line << endl;
@@ -97,6 +97,8 @@ int main(int argc, char **argv) {
                 } else {
                     StringReplaceInlineBash(line);
 
+                    code << '\t';
+
                     if (line.empty() || StringEndsWith(line, ";") || StringEndsWith(line, "{") || StringEndsWith(line, ",")) {
                         code << line;
                     } else {
@@ -107,6 +109,8 @@ int main(int argc, char **argv) {
 
                         code << line.substr(0, endOfLine) << ";" << line.substr(endOfLine);
                     }
+
+                    code << endl;
                 }
             }
         }
@@ -123,12 +127,12 @@ int main(int argc, char **argv) {
         FileOut outBash((buildDir / "build.sh").string());
         FileOut outHash((workingDir / "LastHash.txt").string());
 
-        outCode << "#include <cppsh/cppsh.h>" << "\n\n"
-                << preprocessor.str() << "\n\n"
+        outCode << "#include <cppsh/cppsh.h>" << "\n"
+                << preprocessor.str() << "\n"
                 << "int main(int argc, char **argv) {" << "\n"
                     << "Vector<String> Args;" << "\n"
                     << "if (argc > 1) Args = Vector<String>(argv + 1, argv + argc);" << "\n"
-                    << code.str() << "\n\n"
+                    << code.str() << "\n"
                 << "}" << std::flush;
 
         outCMake    << StringReplacePlaceholders(CMAKE_DEFAULTS, placeholders) << "\n\n"
@@ -273,7 +277,7 @@ void StringReplaceInlineBash(String &str) {
         }
 
         // Jam this finished command in :D
-        str.replace(beginBacktick, endBacktick + 1, command.str());
+        str.replace(beginBacktick, endBacktick + 1 - beginBacktick, command.str());
 
         // Move cursor!
         position = beginBacktick + command.str().length() + 1;
