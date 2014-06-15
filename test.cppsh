@@ -1,17 +1,33 @@
 #!/usr/bin/env cppsh
-/**CMake
-    find_package(Boost COMPONENTS filesystem system REQUIRED)
-    include_directories(${Boost_INCLUDE_DIRS})
-    target_link_libraries(${SCRIPT} ${Boost_LIBRARIES}) 
-*/
 
+// This script requires Boost.
+// It creates a new folder called "Goose" in the current directory,
+// then creates a text.txt file with placeholder text in it.
+
+// Grab Boost
+@package Boost COMPONENTS filesystem system REQUIRED
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem
 
+// Work out paths
 fs::path testDir = "Goose"
 fs::path testFile = testDir / "test.txt"
 
+// Ensure path exists!
 fs::create_directory(testDir)
 
+// Open file for writing
 FileOut out(testFile.string())
 out << "Hello, scripty world!"
+
+// For the hell of it, a function!
+auto PrintNum = func (Int inInt, OutputStream &os) -> void {
+    os << "Number " << inInt << Newl
+}
+for (Int i = 0; i < 20; i++) {
+    PrintNum(i)
+}
+
+
+// Simple inline bash to demonstrate it working
+`echo done!`
