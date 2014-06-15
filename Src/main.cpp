@@ -97,18 +97,16 @@ int main(int argc, char **argv) {
                 } else {
                     StringReplaceInlineBash(line);
 
-                    if (!StringEndsWith(line, ";") && !StringEndsWith(line, "{") && !line.empty()) {
+                    if (line.empty() || StringEndsWith(line, ";") || StringEndsWith(line, "{") || StringEndsWith(line, ",")) {
+                        code << line;
+                    } else {
                         size_t commentSlashSlash = line.rfind("//");
                         size_t commentSlashStar = line.rfind("/*");
 
                         size_t endOfLine = std::min(commentSlashSlash, std::min(commentSlashStar, line.length()));
 
                         code << line.substr(0, endOfLine) << ";" << line.substr(endOfLine);
-                    } else {
-                        code << line;
                     }
-
-                    code << endl;
                 }
             }
         }
