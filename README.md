@@ -1,7 +1,7 @@
 cppsh
 =====
 
-cppsh (pronounced "capiche", ka-PEESH) is C++11 as a scripting language, using CMake as a build system.
+cppsh (pronounced "capisce", ka-PEESH) is C++11 as a scripting language, using CMake as a build system.
 
 Currently VERY, VERY alpha!
 * Only tested on Mac OS X, but should work on Linux too (Windows support won't work without Cygwin, or possibly at all!)
@@ -48,7 +48,7 @@ The `#include` directive, while specified inside the script itself, is *hoisted*
 Sample Script (cppsh style)
 ===========================
 
-Here is that same script, made *scriptier* using the cppsh syntax - capiche??
+Here is that same script, made *scriptier* using the cppsh syntax - capisce??
 
 ```
 #!/usr/bin/env cppsh
