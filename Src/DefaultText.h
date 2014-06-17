@@ -10,6 +10,8 @@ static std::string CMAKE_DEFAULTS = R"(
 
     add_executable(${PROJECT_NAME} Script.cpp)
 
+    include_directories(${current_dir})
+
     # cppsh header
     find_path(CPPSH_HEADER
             NAMES           cppsh/cppsh.h

@@ -38,7 +38,8 @@ int main(int argc, char **argv) {
     // Set up environment
     String scriptName = fs::path(argv[1]).filename().string();
     String scriptHash = CalculateMD5Sum(fs::system_complete(argv[1]).string());
-    
+
+    fs::path currentDir = fs::path(argv[1]).parent_path();
     fs::path workingDir = GetFullPathForSubfolder(scriptHash);
     fs::path buildDir = workingDir / "Build";
 
@@ -118,7 +119,8 @@ int main(int argc, char **argv) {
         // Write build artifacts
         UnorderedMap<String, String> placeholders = {
             {"script_name", scriptName},
-            {"build_dir", buildDir.string()}
+            {"build_dir", buildDir.string()},
+            {"current_dir", currentDir.string() }
         };
 
         // Write out artifacts
