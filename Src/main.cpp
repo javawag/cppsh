@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
         fs::path bashFile = (buildDir / "build.sh");
         fs::permissions(bashFile, fs::add_perms | fs::others_exe | fs::group_exe | fs::owner_exe);
 
-        int buildReturn = RunCommand(bashFile.string());
+        int buildReturn = RunCommand("/usr/bin/env bash " + bashFile.string());
         if (buildReturn != 0) {
             cerr << "CMake / Make failure" << endl;
             return 1;

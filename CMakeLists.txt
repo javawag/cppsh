@@ -1,7 +1,7 @@
 project(cppsh)
 
 cmake_minimum_required(VERSION 2.8)
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} --std=c++11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
 set(EXE_NAME ${PROJECT_NAME})
 
 file(GLOB_RECURSE HEADERS Src/*.h Include/*.h)
