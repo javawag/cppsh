@@ -1,7 +1,7 @@
 cppsh
 =====
 
-cppsh (pronounced "capiche", ka-PEESH) is C++11 as a scripting language, using CMake as a build system.
+cppsh (pronounced "capisce", ka-PEESH) is C++11 as a scripting language, using CMake as a build system.
 
 Currently VERY, VERY alpha!
 * Only tested on Mac OS X, but should work on Linux too (Windows support won't work without Cygwin, or possibly at all!)
@@ -48,7 +48,7 @@ The `#include` directive, while specified inside the script itself, is *hoisted*
 Sample Script (cppsh style)
 ===========================
 
-Here is that same script, made *scriptier* using the cppsh syntax - capiche??
+Here is that same script, made *scriptier* using the cppsh syntax - capisce??
 
 ```
 #!/usr/bin/env cppsh
@@ -121,6 +121,18 @@ Output << banner
 
 Noice!
 
+You can also get Bool or Int results - like so:
+```
+Bool fileExists = `stat somefile.txt`
+
+if (fileExists) {
+    Out << "File is there!" << Newl
+}
+
+Int exitCode = `cp file file2`
+Out << "Copied file with exit code " << exitCode << Newl
+```
+
 How does this work internally?!
 ===============================
 
@@ -131,13 +143,13 @@ Directory configuration:
 ~/.cppsh
   |_ 615b3257271b98f658a5ec33cc5f20b0   <-- hashed script path
          |_ Build/                      <-- build folder
-         |    |_ run.sh                 <-- script which bootstraps and runs the compiled code
+         |    |_ build.sh               <-- script which builds the code ready for running
          |    |_ (cmake generated files)<-- compiled code from cmake
          |_ CMakeLists.txt              <-- generated cmake build script
          |_ Script.cpp                  <-- generated full C++ source
 ```
 
-The `CMakeLists.txt` and `Script.cpp` files are generated from the script (adding semi-colons and such where needed!), and the `run.sh` is generated from a template. Then, cppsh runs `run.sh` which calls CMake to build your script in the parent directory. It then runs the resultant executable with any parameters you passed.
+The `CMakeLists.txt` and `Script.cpp` files are generated from the script (adding semi-colons and such where needed!), and the `build.sh` is generated from a template. Then, cppsh runs `build.sh` which calls CMake to build your script in the parent directory. It then runs the resultant executable with any parameters you passed.
 
 Each time you run the script, if a cached version of the binary is available, it should be used rather than compiling from scratch to save time.
 
