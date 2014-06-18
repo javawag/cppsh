@@ -5,7 +5,7 @@
 static std::string CMAKE_DEFAULTS = R"(
     project(${script_name})
     cmake_minimum_required(VERSION 2.8)
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} --std=c++11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
     set(SCRIPT ${PROJECT_NAME})
 
     add_executable(${PROJECT_NAME} Script.cpp)
