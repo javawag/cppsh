@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     String scriptName = fs::path(argv[1]).filename().string();
     String scriptHash = CalculateMD5Sum(fs::system_complete(argv[1]).string());
 
-    fs::path currentDir = fs::path(argv[1]).parent_path();
+    fs::path currentDir = fs::absolute(fs::path(argv[1])).parent_path();
     fs::path workingDir = GetFullPathForSubfolder(scriptHash);
     fs::path buildDir = workingDir / "Build";
 
