@@ -103,8 +103,12 @@ int main(int argc, char **argv) {
                     if (line.empty() || StringEndsWith(line, ";") || StringEndsWith(line, "{") || StringEndsWith(line, ",")) {
                         code << line;
                     } else {
-                        size_t commentSlashSlash = line.rfind("//");
                         size_t commentSlashStar = line.rfind("/*");
+
+                        size_t commentSlashSlash = line.length() - 1;
+                        do {
+                            commentSlashSlash = line.rfind("//", commentSlashSlash - 1);
+                        } while (commentSlashSlash != String::npos && line[commentSlashSlash - 1] == ':');
 
                         size_t endOfLine = std::min(commentSlashSlash, std::min(commentSlashStar, line.length()));
 
