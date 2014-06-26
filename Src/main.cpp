@@ -101,8 +101,6 @@ int main(int argc, char **argv) {
                 } else {
                     StringReplaceInlineBash(line);
 
-                    code << '\t';
-
                     if (line.empty() || StringEndsWith(line, ";") || StringEndsWith(line, "{") || StringEndsWith(line, ",")) {
                         code << line;
                     } else {
