@@ -1,6 +1,9 @@
 #include "main.h"
 #include "MD5.h"
 
+#include <regex>
+    using std::regex;
+
 using std::cerr;
 using std::cin;
 using std::cout;
@@ -236,6 +239,7 @@ void StringReplaceInlineBash(String &str) {
 
         // Get the full command text, including ${{var}} placeholders
         String rawCommand = str.substr(beginBacktick + 1, endBacktick - beginBacktick - 1); //e.g. "ls -alh"
+        rawCommand = std::regex_replace(rawCommand, regex("\""), "\\\"");
 
         //Find each ${{var}} in the command (if any!)
         size_t commandPosition = 0;
