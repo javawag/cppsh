@@ -26,7 +26,7 @@ bool StringBeginsWith(const String &string, const String &pattern);
 bool StringEndsWith(const String &string, const String &pattern);
 String StringReplacePlaceholders(const String &string, const UnorderedMap<String, String> &placeholderValues);
 String StringReplace(const String &string, const String &find, const String &replace);
-void StringReplaceInlineBash(String &str);
+void StringReplaceInlineBash(String &str, const fs::path &cdTo);
 
 int RunCommand(const String &command);
 

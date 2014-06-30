@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
                 } else if (insideCmakePart) {
                     cmake << line << endl;
                 } else {
-                    StringReplaceInlineBash(line);
+                    StringReplaceInlineBash(line, currentDir);
 
                     if (line.empty() || StringEndsWith(line, ";") || StringEndsWith(line, "{") || StringEndsWith(line, ",")) {
                         code << line;
@@ -208,7 +208,7 @@ String StringReplacePlaceholders(const String &string, const UnorderedMap<String
     return sCopy;
 }
 
-void StringReplaceInlineBash(String &str) {
+void StringReplaceInlineBash(String &str, const fs::path &cdTo) {
     // This is a bit (/lot) of a mess, but it does a difficult job!
     size_t position = 0;
 
@@ -233,7 +233,7 @@ void StringReplaceInlineBash(String &str) {
 
         // Write start of call
         OutputStringStream command;
-        command << "RunExternalCommand(\"";
+        command << "RunExternalCommand(\"cd \\\""<< cdTo.string() << "\\\" && ";
 
         // Get the full command text, including ${{var}} placeholders
         String rawCommand = str.substr(beginBacktick + 1, endBacktick - beginBacktick - 1); //e.g. "ls -alh"
