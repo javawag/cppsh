@@ -10,6 +10,8 @@ using std::cout;
 using std::endl;
 
 int main(int argc, char **argv) {
+    int nextIdentifier = 0;
+
     // Check arguments
 	if (argc < 2) {
 		cerr << "No script defined." << endl;
@@ -96,6 +98,31 @@ int main(int argc, char **argv) {
                             {"args", args}
                     });
                     cmake << autoCmake << endl;
+                } else if (StringBeginsWith(line, "@include")) {
+                    String includeName = "INCLUDE_" + std::to_string(nextIdentifier++);
+
+                    size_t firstSpace = line.find_first_of(" ");
+                    String includePath = line.substr(firstSpace + 1);
+
+                    String autoInclude = StringReplacePlaceholders(AUTO_INCLUDE_TEMPLATE, {
+                        {"path_var", includeName},
+                        {"include_path", includePath}
+                    });
+
+                    cmake << autoInclude << endl;
+                    preprocessor << "#include <" << includePath << ">" << endl;
+                } else if (StringBeginsWith(line, "@library")) {
+                    String libName = "LIB_" + std::to_string(nextIdentifier++);
+
+                    size_t firstSpace = line.find_first_of(" ");
+                    String libraryName = line.substr(firstSpace + 1);
+
+                    String autoInclude = StringReplacePlaceholders(AUTO_LIBRARY_TEMPLATE, {
+                        {"lib_var", libName},
+                        {"lib_name", libraryName}
+                    });
+
+                    cmake << autoInclude << endl;
                 } else if (insideCmakePart) {
                     cmake << line << endl;
                 } else {

@@ -27,6 +27,16 @@ include_directories(${${pkg_name}_INCLUDE_DIR})
 target_link_libraries(${SCRIPT} ${${pkg_name}_LIBRARIES})
 )";
 
+static std::string AUTO_INCLUDE_TEMPLATE = R"(
+find_path(${path_var} ${include_path})
+include_directories(${${path_var}})
+)";
+
+static std::string AUTO_LIBRARY_TEMPLATE = R"(
+find_library(${lib_var} ${lib_name})
+target_link_libraries(${SCRIPT} ${${lib_var}})
+)";
+
 // Bash build script:
 static std::string BASH_SCRIPT = R"(#!/bin/bash
 OLD_DIR=$PWD
