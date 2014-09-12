@@ -23,7 +23,6 @@
 // documentation and/or software.
 
 
-
 // The original md5 implementation avoids external libraries.
 // This version has dependency on stdio.h for file input and
 // string.h for memcpy.
@@ -48,11 +47,6 @@
 #define S42 10
 #define S43 15
 #define S44 21
-
-
-
-
-
 
 static unsigned char PADDING[64] = {
         0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -256,8 +250,8 @@ public:
     // operation, processing another message block, and updating the
     // context.
     void Update(
-            unsigned char *input,   // input block
-            unsigned int inputLen ) // length of input block
+            unsigned char   *input,   // input block
+            size_t           inputLen ) // length of input block
     {
         unsigned int i, index, partLen;
 
@@ -343,7 +337,7 @@ public:
 
         FILE *file;
 
-        int len;
+        size_t len;
         unsigned char buffer[1024] ;
 
         if( (file = fopen (filename, "rb")) == NULL )

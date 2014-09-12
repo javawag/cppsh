@@ -2,12 +2,6 @@
 #include "MD5.h"
 
 #include <regex>
-    using std::regex;
-
-using std::cerr;
-using std::cin;
-using std::cout;
-using std::endl;
 
 int main(int argc, char **argv) {
     int nextIdentifier = 0;
@@ -22,7 +16,7 @@ int main(int argc, char **argv) {
 	}
 
     // First check the user doesn't mean to clear their cache!
-    if (String(argv[1]) == "--clear-cache") {
+    if (string(argv[1]) == "--clear-cache") {
         uintmax_t deleted = fs::remove_all(GetCppshFolder());
 
         if (deleted) {
@@ -33,7 +27,7 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-    FileIn script(argv[1]);
+    ifstream script(argv[1]);
 
     if (!script.good()) {
         cerr << "Error reading script " << argv[1] << "! Bailing..." << endl;
@@ -41,8 +35,8 @@ int main(int argc, char **argv) {
     }
 
     // Set up environment
-    String scriptName = fs::path(argv[1]).filename().string();
-    String scriptHash = CalculateMD5Sum(fs::system_complete(argv[1]).string());
+    string scriptName = fs::path(argv[1]).filename().string();
+    string scriptHash = CalculateMD5Sum(fs::system_complete(argv[1]).string());
 
     fs::path currentDir = fs::absolute(fs::path(argv[1])).parent_path();
     fs::path workingDir = GetFullPathForSubfolder(scriptHash);
@@ -52,9 +46,9 @@ int main(int argc, char **argv) {
 
     // Firstly, check to make sure we've definitely changed the script
     bool isCached = false;
-    FileIn inHash((GetFullPathForSubfolder(scriptHash) / "LastHash.txt").string());
+    ifstream inHash((GetFullPathForSubfolder(scriptHash) / "LastHash.txt").string());
     if (inHash.good()) {
-        String hash;
+        string hash;
         inHash >> hash;
 
         if (hash == CalculateMD5Sum(fs::path(argv[1]))) {
@@ -65,11 +59,11 @@ int main(int argc, char **argv) {
     if (!isCached) {
         // Read in file
         bool insideCmakePart = false;
-        OutputStringStream cmake;
-        OutputStringStream preprocessor;
-        OutputStringStream code;
+        ostringstream cmake;
+        ostringstream preprocessor;
+        ostringstream code;
 
-        for (String line; std::getline(script, line);) {
+        for (string line; std::getline(script, line);) {
             if (StringBeginsWith(line, "#!")) {
                 // Don't let this into the C++ code!!
             } else if (StringBeginsWith(line, "/**CMake")) {
@@ -81,30 +75,30 @@ int main(int argc, char **argv) {
             } else {
                 if (StringBeginsWith(line, "@package")) {
                     size_t firstSpace = line.find_first_of(" ");
-                    String packageNameAndArgs = line.substr(firstSpace + 1);
+                    string packageNameAndArgs = line.substr(firstSpace + 1);
 
                     size_t secondSpace = packageNameAndArgs.find_first_of(" ");
 
-                    String packageName, args;
-                    if (firstSpace != String::npos) {
+                    string packageName, args;
+                    if (firstSpace != string::npos) {
                         packageName = packageNameAndArgs.substr(0, secondSpace);
                         args = packageNameAndArgs.substr(secondSpace + 1);
                     } else {
                         packageName = packageNameAndArgs;
                     }
 
-                    String autoCmake = StringReplacePlaceholders(AUTO_PACKAGE_TEMPLATE, {
+                    string autoCmake = StringReplacePlaceholders(AUTO_PACKAGE_TEMPLATE, {
                             {"pkg_name", packageName},
                             {"args", args}
                     });
                     cmake << autoCmake << endl;
                 } else if (StringBeginsWith(line, "@include")) {
-                    String includeName = "INCLUDE_" + std::to_string(nextIdentifier++);
+                    string includeName = "INCLUDE_" + to_string(nextIdentifier++);
 
                     size_t firstSpace = line.find_first_of(" ");
-                    String includePath = line.substr(firstSpace + 1);
+                    string includePath = line.substr(firstSpace + 1);
 
-                    String autoInclude = StringReplacePlaceholders(AUTO_INCLUDE_TEMPLATE, {
+                    string autoInclude = StringReplacePlaceholders(AUTO_INCLUDE_TEMPLATE, {
                         {"path_var", includeName},
                         {"include_path", includePath}
                     });
@@ -112,12 +106,12 @@ int main(int argc, char **argv) {
                     cmake << autoInclude << endl;
                     preprocessor << "#include <" << includePath << ">" << endl;
                 } else if (StringBeginsWith(line, "@library")) {
-                    String libName = "LIB_" + std::to_string(nextIdentifier++);
+                    string libName = "LIB_" + std::to_string(nextIdentifier++);
 
                     size_t firstSpace = line.find_first_of(" ");
-                    String libraryName = line.substr(firstSpace + 1);
+                    string libraryName = line.substr(firstSpace + 1);
 
-                    String autoInclude = StringReplacePlaceholders(AUTO_LIBRARY_TEMPLATE, {
+                    string autoInclude = StringReplacePlaceholders(AUTO_LIBRARY_TEMPLATE, {
                         {"lib_var", libName},
                         {"lib_name", libraryName}
                     });
@@ -136,7 +130,7 @@ int main(int argc, char **argv) {
                         size_t commentSlashSlash = line.length() - 1;
                         do {
                             commentSlashSlash = line.rfind("//", commentSlashSlash - 1);
-                        } while (commentSlashSlash != String::npos && line[commentSlashSlash - 1] == ':');
+                        } while (commentSlashSlash != string::npos && line[commentSlashSlash - 1] == ':');
 
                         size_t endOfLine = std::min(commentSlashSlash, std::min(commentSlashStar, line.length()));
 
@@ -149,17 +143,17 @@ int main(int argc, char **argv) {
         }
 
         // Write build artifacts
-        UnorderedMap<String, String> placeholders = {
+        unordered_map<string, string> placeholders = {
             {"script_name", scriptName},
             {"build_dir", buildDir.string()},
             {"current_dir", currentDir.string() }
         };
 
         // Write out artifacts
-        FileOut outCode((workingDir / "Script.cpp").string());
-        FileOut outCMake((workingDir / "CMakeLists.txt").string());
-        FileOut outBash((buildDir / "build.sh").string());
-        FileOut outHash((workingDir / "LastHash.txt").string());
+        ofstream outCode((workingDir / "Script.cpp").string());
+        ofstream outCMake((workingDir / "CMakeLists.txt").string());
+        ofstream outBash((buildDir / "build.sh").string());
+        ofstream outHash((workingDir / "LastHash.txt").string());
 
         outCode << "#include <cppsh/cppsh.h>" << "\n"
                 << preprocessor.str() << "\n"
@@ -188,54 +182,52 @@ int main(int argc, char **argv) {
     }
 
     // Finally, run it!
-    OutputStringStream command;
+    ostringstream command;
     command << (buildDir / scriptName).string() << " " << ConcatenateArgs(argv + 2, argv + argc);
     return RunCommand(command.str());
 }
 
-bool StringBeginsWith(const String &string, const String &pattern) {
-    size_t startPos = string.find_first_not_of("\t ");
+bool StringBeginsWith(const string &str, const string &pattern) {
+    size_t startPos = str.find_first_not_of("\t ");
 
-    if (string.length() - startPos < pattern.length()) {
+    if (str.length() - startPos < pattern.length()) {
         return false;
     }
 
-    return std::equal(  string.begin() + startPos,
-                        string.begin() + startPos + pattern.length(),
-                        pattern.begin()
+    return equal(  str.begin() + startPos,
+                   str.begin() + startPos + pattern.length(),
+                   pattern.begin()
     );
 }
-bool StringEndsWith(const String &string, const String &pattern) {
-    size_t endPos = string.find_last_not_of("\t ") + 1;
+bool StringEndsWith(const string &str, const string &pattern) {
+    size_t endPos = str.find_last_not_of("\t ") + 1;
 
     if (endPos < pattern.length()) {
         return false;
     }
 
-    return std::equal(  string.begin() + endPos - pattern.length(),
-                        string.begin() + endPos,
-                        pattern.begin()
+    return equal(   str.begin() + endPos - pattern.length(),
+                    str.begin() + endPos,
+                    pattern.begin()
     );
 }
 
-String StringReplacePlaceholders(const String &string, const UnorderedMap<String, String> &placeholderValues) {
-    String sCopy = string;
-
+string StringReplacePlaceholders(string str, const unordered_map<string, string> &placeholderValues) {
     for (auto &pair : placeholderValues) {
         size_t pos = 0;
 
-        String token = "${" + pair.first + "}";
+        string token = "${" + pair.first + "}";
 
-        while ((pos = sCopy.find(token, pos)) != String::npos) {
-            sCopy.replace(pos, token.length(), pair.second);
+        while ((pos = str.find(token, pos)) != string::npos) {
+            str.replace(pos, token.length(), pair.second);
             pos += pair.second.length();
         }
     }
 
-    return sCopy;
+    return str;
 }
 
-void StringReplaceInlineBash(String &str, const fs::path &cdTo) {
+void StringReplaceInlineBash(string &str, const fs::path &cdTo) {
     // This is a bit (/lot) of a mess, but it does a difficult job!
     size_t position = 0;
 
@@ -259,12 +251,12 @@ void StringReplaceInlineBash(String &str, const fs::path &cdTo) {
         }
 
         // Write start of call
-        OutputStringStream command;
+        ostringstream command;
         command << "RunExternalCommand(\"cd \\\""<< cdTo.string() << "\\\" && ";
 
         // Get the full command text, including ${{var}} placeholders
-        String rawCommand = str.substr(beginBacktick + 1, endBacktick - beginBacktick - 1); //e.g. "ls -alh"
-        rawCommand = std::regex_replace(rawCommand, regex("\""), "\\\"");
+        string rawCommand = str.substr(beginBacktick + 1, endBacktick - beginBacktick - 1); //e.g. "ls -alh"
+        rawCommand = regex_replace(rawCommand, regex("\""), "\\\"");
 
         //Find each ${{var}} in the command (if any!)
         size_t commandPosition = 0;
@@ -272,7 +264,7 @@ void StringReplaceInlineBash(String &str, const fs::path &cdTo) {
             size_t beginVar = rawCommand.find("${{", commandPosition);
 
             // No ${{vars}} at all!
-            if (beginVar == String::npos) {
+            if (beginVar == string::npos) {
                 // Write command as-is, all done
                 command << rawCommand.substr(commandPosition, rawCommand.length() - commandPosition);
                 break;
@@ -285,12 +277,12 @@ void StringReplaceInlineBash(String &str, const fs::path &cdTo) {
             size_t endVar = rawCommand.find("}}", beginVar + 1);
 
             // Let's hope we don't have unclosed vars, but just in case
-            if (endVar == String::npos) {
+            if (endVar == string::npos) {
                 break;
             }
 
             // Get the text to appear outside quotes (i.e. the var)
-            String outsideQuotes = rawCommand.substr(beginVar + 3, endVar - beginVar - 3);
+            string outsideQuotes = rawCommand.substr(beginVar + 3, endVar - beginVar - 3);
 
             // Insert it in
             commandPosition = endVar + 2;
@@ -319,7 +311,7 @@ void StringReplaceInlineBash(String &str, const fs::path &cdTo) {
     }
 }
 
-int RunCommand(const String &command) {
+int RunCommand(const string &command) {
     int returnCode = system(command.c_str());
     return WEXITSTATUS(returnCode);
 }
@@ -329,11 +321,11 @@ fs::path GetCppshFolder() {
 }
 
 
-fs::path GetFullPathForSubfolder(const String &folderName) {
+fs::path GetFullPathForSubfolder(const string &folderName) {
     return GetCppshFolder() / folderName;
 }
 
-void CreateSubfolderIfNotExist(const String &folderName) {
+void CreateSubfolderIfNotExist(const string &folderName) {
     fs::path sub = GetFullPathForSubfolder(folderName) / "Build";
 
     if (!fs::exists(sub)) {
@@ -341,12 +333,11 @@ void CreateSubfolderIfNotExist(const String &folderName) {
     }
 }
 
-String CalculateMD5Sum(const String &in) {
+string CalculateMD5Sum(const string &in) {
     MD5 md5;
     return md5.digestString(const_cast<char *>(in.c_str()));
 }
 
 String CalculateMD5Sum(const fs::path &in) {
-    MD5 md5;
-    return md5.digestFile(const_cast<char *>(in.string().c_str()));
+    return CalculateMD5Sum(in.string());
 }
