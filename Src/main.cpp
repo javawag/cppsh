@@ -256,7 +256,7 @@ void StringReplaceInlineBash(string &str, const fs::path &cdTo) {
 
         // Get the full command text, including ${{var}} placeholders
         string rawCommand = str.substr(beginBacktick + 1, endBacktick - beginBacktick - 1); //e.g. "ls -alh"
-        rawCommand = regex_replace(rawCommand, regex("\""), "\\\"");
+        rawCommand = regex_replace(rawCommand, regex("\""), string("\\\""));
 
         //Find each ${{var}} in the command (if any!)
         size_t commandPosition = 0;
