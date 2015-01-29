@@ -25,3 +25,4 @@
 
 # Possible build folder
 build/
+.DS_Store
